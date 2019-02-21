@@ -76,6 +76,7 @@ app.post('/api/books/:bookId', async (req, res) => {
   
   const comment = new Comment({ description, bookName: book.title });
   await comment.save();book.commentcount++;
+  await book.save();
   
   const finalBook = _.pick(book, ['_id', 'title']);
   const comments = await Comment.find({ bookName: finalBook.title });
