@@ -12,8 +12,8 @@ describe('DELETE /api/books', () => {
       .expect((res) => {
         expect(res.text).toBe('complete delete successful');
       })
-      .end((err, res) => {
-        if(err){
+      .end((err) => {
+        if (err) {
           return done(err);
         }
 

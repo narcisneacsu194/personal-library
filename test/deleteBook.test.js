@@ -8,27 +8,29 @@ const { books } = require('./database/populateDatabase');
 
 describe('DELETE /api/books/:bookId', () => {
   it('should successfully delete a particular book', (done) => {
+    /* eslint no-underscore-dangle: 0 */
     const id = books[0]._id.toHexString();
 
     request(app)
-     .delete(`/api/books/${id}`)
-     .expect(200)
-     .expect((res) => {
+      .delete(`/api/books/${id}`)
+      .expect(200)
+      .expect((res) => {
         expect(res.text).toBe('delete successful');
-     }).end((err, res) => {
-       if(err){
-         return done(err);
-       }
+      })
+      .end((err) => {
+        if (err) {
+          return done(err);
+        }
 
-       return Book.findById(id).then((book) => {
-         expect(book).toBeFalsy();
+        return Book.findById(id).then((book) => {
+          expect(book).toBeFalsy();
 
-         return Comment.find({ bookName: 'book1' });
-       }).then((comments) => {
-         expect(comments.length).toBe(0);
-         done();
-       }).catch(error => done(error));
-     })
+          return Comment.find({ bookName: 'book1' });
+        }).then((comments) => {
+          expect(comments.length).toBe(0);
+          done();
+        }).catch(error => done(error));
+      });
   });
 
   it('should return an error if the provided id is invalid', (done) => {
@@ -37,7 +39,8 @@ describe('DELETE /api/books/:bookId', () => {
       .expect(404)
       .expect((res) => {
         expect(res.text).toBe('no book exists');
-      }).end(done);
+      })
+      .end(done);
   });
 
   it('should return an error if the provided id does not belong to any book', (done) => {
@@ -48,6 +51,7 @@ describe('DELETE /api/books/:bookId', () => {
       .expect(404)
       .expect((res) => {
         expect(res.text).toBe('no book exists');
-      }).end(done);
+      })
+      .end(done);
   });
 });

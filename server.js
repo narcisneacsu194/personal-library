@@ -16,9 +16,9 @@ app.use(helmet.noCache());
 app.use(helmet.hidePoweredBy({ setTo: 'PHP 4.2.0' }));
 
 app.post('/api/books', async (req, res) => {
-  const title = req.body.title;
+  const { title } = req.body;
   const book = await Book.findOne({ title });
-  if(book){
+  if (book) {
     return res.status(400).send(`A book with the title '${title}' already exists. Please try again.`);
   }
 
@@ -30,74 +30,69 @@ app.post('/api/books', async (req, res) => {
 
 app.get('/api/books', async (req, res) => {
   const books = await Book.find({});
-  const finalBooks = books.map((book) => {
-      return _.pick(book, '_id', 'title', 'commentcount');
-  });
+  const finalBooks = books.map(book => _.pick(book, '_id', 'title', 'commentcount'));
 
   return res.send(finalBooks);
 });
 
 app.get('/api/books/:bookId', async (req, res) => {
-  const bookId = req.params.bookId;
+  const { bookId } = req.params;
 
-  if(!ObjectID.isValid(bookId)){
-      return res.status(404).send('no book exists');
+  if (!ObjectID.isValid(bookId)) {
+    return res.status(404).send('no book exists');
   }
 
   const book = await Book.findById(bookId);
 
-  if(!book){
+  if (!book) {
     return res.status(404).send('no book exists');
   }
 
-  const finalBook = _.pick(book, ['_id', 'title'])
+  const finalBook = _.pick(book, ['_id', 'title']);
   const comments = await Comment.find({ bookName: finalBook.title });
-  const finalComments = comments.map((comment) => {
-    return _.pick(comment, ['_id', 'description']);
-  });
+  const finalComments = comments.map(comment => _.pick(comment, ['_id', 'description']));
   finalBook.comments = finalComments;
   return res.send(finalBook);
 });
 
 app.post('/api/books/:bookId', async (req, res) => {
-  const bookId = req.params.bookId;
+  const { bookId } = req.params;
 
-  if(!ObjectID.isValid(bookId)){
+  if (!ObjectID.isValid(bookId)) {
     return res.status(404).send('no book exists');
   }
 
   const book = await Book.findById(bookId);
 
-  if(!book){
+  if (!book) {
     return res.status(404).send('no book exists');
   }
 
-  const description = req.body.description;
-  
+  const { description } = req.body;
+
   const comment = new Comment({ description, bookName: book.title });
-  await comment.save();book.commentcount++;
+  await comment.save();
+  book.commentcount += 1;
   await book.save();
-  
+
   const finalBook = _.pick(book, ['_id', 'title']);
   const comments = await Comment.find({ bookName: finalBook.title });
-  const finalComments = comments.map((comment) => {
-    return _.pick(comment, ['_id', 'description']);
-  });
+  const finalComments = comments.map(comm => _.pick(comm, ['_id', 'description']));
   finalBook.comments = finalComments;
 
   return res.send(finalBook);
 });
 
 app.delete('/api/books/:bookId', async (req, res) => {
-  const bookId = req.params.bookId;
+  const { bookId } = req.params;
 
-  if(!ObjectID.isValid(bookId)){
+  if (!ObjectID.isValid(bookId)) {
     return res.status(404).send('no book exists');
   }
 
   const book = await Book.findById(bookId);
 
-  if(!book){
+  if (!book) {
     return res.status(404).send('no book exists');
   }
 
@@ -108,10 +103,10 @@ app.delete('/api/books/:bookId', async (req, res) => {
 });
 
 app.delete('/api/books', async (req, res) => {
-    await Book.deleteMany({});
-    await Comment.deleteMany({});
+  await Book.deleteMany({});
+  await Comment.deleteMany({});
 
-    return res.send('complete delete successful');
+  return res.send('complete delete successful');
 });
 
 app.listen(port, () => {
