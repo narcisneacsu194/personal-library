@@ -16,7 +16,14 @@ app.use(helmet.noCache());
 app.use(helmet.hidePoweredBy({ setTo: 'PHP 4.2.0' }));
 
 app.post('/api/books', async (req, res) => {
-  const { title } = req.body;
+  let { title } = req.body;
+
+  if (!title || title.trim() === '') {
+    return res.status(400).send('The title property must be provided and it should not be an empty string.');
+  }
+
+  title = title.trim();
+
   const book = await Book.findOne({ title });
   if (book) {
     return res.status(400).send(`A book with the title '${title}' already exists. Please try again.`);
@@ -68,7 +75,13 @@ app.post('/api/books/:bookId', async (req, res) => {
     return res.status(404).send('no book exists');
   }
 
-  const { description } = req.body;
+  let { description } = req.body;
+
+  if (!description || description.trim() === '') {
+    return res.status(400).send('The description property must be provided and it should not be an empty string.');
+  }
+
+  description = description.trim();
 
   const comment = new Comment({ description, bookName: book.title });
   await comment.save();

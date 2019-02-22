@@ -75,4 +75,48 @@ describe('POST /api/books/:bookId', () => {
       })
       .end(done);
   });
+
+  it('should return an error if trying to create a comment without providing a description property', (done) => {
+    const id = books[0]._id.toHexString();
+
+    request(app)
+      .post(`/api/books/${id}`)
+      .send({ description2: 'Random description' })
+      .expect(400)
+      .expect((res) => {
+        expect(res.text).toBe('The description property must be provided and it should not be an empty string.');
+      })
+      .end((err) => {
+        if (err) {
+          return done(err);
+        }
+
+        return Book.findById(id).then((book) => {
+          expect(book.commentcount).toBe(2);
+          done();
+        }).catch(error => done(error));
+      });
+  });
+
+  it('should return an error if trying to create a comment using an empty string as the description', (done) => {
+    const id = books[0]._id.toHexString();
+
+    request(app)
+      .post(`/api/books/${id}`)
+      .send({ description2: 'Random description' })
+      .expect(400)
+      .expect((res) => {
+        expect(res.text).toBe('The description property must be provided and it should not be an empty string.');
+      })
+      .end((err) => {
+        if (err) {
+          return done(err);
+        }
+
+        return Book.findById(id).then((book) => {
+          expect(book.commentcount).toBe(2);
+          done();
+        }).catch(error => done(error));
+      });
+  });
 });

@@ -32,7 +32,7 @@ describe('POST /api/books', () => {
       });
   });
 
-  it('should return error if trying to create a new book with a name that already exists', (done) => {
+  it('should return an error if trying to create a new book with a name that already exists', (done) => {
     const body = { title: 'book2' };
 
     request(app)
@@ -49,6 +49,46 @@ describe('POST /api/books', () => {
 
         return Book.findOne({ title: 'book3' }).then((book) => {
           expect(book).toBeFalsy();
+          done();
+        }).catch(error => done(error));
+      });
+  });
+
+  it('should return an error if trying to create a book without providing a title property', (done) => {
+    request(app)
+      .post('/api/books')
+      .send({ title2: 'Random title' })
+      .expect(400)
+      .expect((res) => {
+        expect(res.text).toBe('The title property must be provided and it should not be an empty string.');
+      })
+      .end((err) => {
+        if (err) {
+          return done(err);
+        }
+
+        return Book.find({}).then((books) => {
+          expect(books.length).toBe(2);
+          done();
+        }).catch(error => done(error));
+      });
+  });
+
+  it('should return an error if trying to create a book using an empty string as the title', (done) => {
+    request(app)
+      .post('/api/books')
+      .send({ title: ' ' })
+      .expect(400)
+      .expect((res) => {
+        expect(res.text).toBe('The title property must be provided and it should not be an empty string.');
+      })
+      .end((err) => {
+        if (err) {
+          return done(err);
+        }
+
+        return Book.find({}).then((books) => {
+          expect(books.length).toBe(2);
           done();
         }).catch(error => done(error));
       });
