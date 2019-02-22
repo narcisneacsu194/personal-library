@@ -22,7 +22,7 @@ Microservice project for recording a list of books, and some comments for them.
   The *title* field is mandatory.
 
   If the *title* field has an empty string, or is missing entirely,
-   the message **The title property must be provided and it should not be an empty string.** will be the response.
+   the message **"The title property must be provided and it should not be an empty string."** will be the response.
 
 * *GET /api/books/* returns a list of all the available books from the database.
  The response body of this request looks something like the following:
@@ -58,7 +58,7 @@ Microservice project for recording a list of books, and some comments for them.
    ```
   Instead of getting the *commentcount* field now, we get an array with all the comments assigned to the specific book. A comment object only displays the id that it has in the database, and the description field.
   We can't make requests to retrieve only comments. They can only be retrieved together with a particular book.
-  If this request is made using an invalid id, or a non-existent id in the database, the message **no book exists** will be returned.
+  If this request is made using an invalid id, or a non-existent id in the database, the message **"no book exists"** will be returned.
 
 * *POST /api/books/:bookId* will create a new comment for a given book. A request body like the following is needed: 
 
@@ -91,16 +91,16 @@ Microservice project for recording a list of books, and some comments for them.
   The *description* field is mandatory.
 
   If the *description* has an empty string, or is missing entirely,
-   the message **The description property must be provided and it should not be an empty string.** will be the response.
-  If this request is made using an invalid id, or a non-existent id in the database, the message **no book exists** will be returned.
+   the message **"The description property must be provided and it should not be an empty string."** will be the response.
+  If this request is made using an invalid id, or a non-existent id in the database, the message **"no book exists"** will be returned.
 
 * *DELETE /api/books/* will delete all the books and all their associated comments
 from the database. If the request is successful, the message
-**complete delete successful** will be returned.
+**"complete delete successful"** will be returned.
 
 * *DELETE /api/books/:bookId* will delete a specific book and all its associated comments from the database. 
-If the request is successful, the message **delete successful** will be returned.
-If this request is made using an invalid id, or a non-existent id in the database, the message **no book exists** will be returned.
+If the request is successful, the message **"delete successful"** will be returned.
+If this request is made using an invalid id, or a non-existent id in the database, the message **"no book exists"** will be returned.
 
 ## Getting Started
 
