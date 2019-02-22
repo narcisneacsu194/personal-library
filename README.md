@@ -5,6 +5,7 @@ Microservice project for recording a list of books, and some comments for them.
 **Examples:**
 
 * *POST /api/books/* will create a new book. A request body like the following is needed: 
+
    ```
     {
       "title": "exampleBookTitle"
@@ -18,54 +19,88 @@ Microservice project for recording a list of books, and some comments for them.
       "title": "exampleBookTitle"
     }
    ```
-  The *issue_title*, *issue_text*, *created_by* fields are mandatory. If you do not provide a value for the *assigned_to*
-  and *status_text* fields, they will be returned as empty strings.
-  You can provide either strings or numbers for the previously 
-  mentioned fields. The strings can't be empty.
-  By default, the *created_on* and *updated_on* fields will 
-  have the current date and time as a value. The *open* field
-  will have a value of *true* by default.
+  The *title* field is mandatory.
 
-  If one of the mandatory fields has an empty string, or is missing entirely, the message **missing inputs** will be the response.
- 
+  If the *title* field has an empty string, or is missing entirely,
+   the message **The title property must be provided and it should not be an empty string.** will be the response.
 
-* *PUT /api/issues/{projectname}* will update an existing issue of a specific project. A request body like the following is needed: 
+* *GET /api/books/* returns a list of all the available books from the database.
+ The response body of this request looks something like the following:
+
    ```
     {
-      "issue_title": "issueTitle-edited",
-      "issue_text": "issueText-edited",
-      "created_on": "createdOn-edited",
-      "created_by": "createdBy-edited",
-      "assigned_to": "assignedTo-edited",
-      "open": false,
-      "status_text": "statusText-edited",
-      "_id": "5c090dc1a0de0e006ef1422c"
+      "_id": "5c6e893463fb6c5bde6c8c2c",
+      "title": "exampleBookTitle",
+      "commentcount": 0
     }
    ```
-  The *_id* field is mandatory. It is also mandatory that at least one other field is included with the same or a different
-  value. Otherwise, the message **no updated field sent** will be
-  returned. If the request was successful, the message **successfully updated** will be returned.
+  The *commentcount* field will be set to the value of 0 by default, because when the book is just created, no comments are
+  added for it. Each time a new comment is assigned to the book, the value of the *commentcount* field is incremented.
 
-  You can put either a string or a number for the request body fields.
-  The exception is the *open* field, where you can only put boolean values.
-  The *updated_on* field will always get updated with the current date and time, when you execute the *PUT* endpoint.
-  If the *_id* field has an invalid format, or it doesn't belong
-  to any issue from the database, then the message *could not update* will be shown. The same message will appear if the 
-  *projectname* doesn't belong to any existing project.
+* *GET /api/books/:bookId* returns a specific book from the database.
+ The response body of this request looks something like the following:
 
-* *DELETE /api/issues/{projectname}* will delete a specific 
-project issue by its *_id* field, which must be specified in the request body. If the issue is deleted successfully, the message 
-**'deleted ' + _id** is returned.
-If no id is specified, or has an invalid format, the message **_id error** is returned.
-If the *_id* field doesn't match with one from the database, the message **'could not delete' + _id** is returned. This same message will be displayed if a project with 
-the given name as a request param doesn't exist.
+   ```
+    {
+      "_id": "5c6e893463fb6c5bde6c8c2c",
+      "title": "exampleBookTitle",
+      "comments": [
+        {
+          "_id": "5c6fd419f48f041eb4f64bcc",
+          "description": "comment1"
+        },
+        {
+          "_id": "5c6fd424f48f041eb4f64bcd",
+          "description": "comment2"
+        }
+      ]
+    }
+   ```
+  Instead of getting the *commentcount* field now, we get an array with all the comments assigned to the specific book. A comment object only displays the id that it has in the database, and the description field.
+  We can't make requests to retrieve only comments. They can only be retrieved together with a particular book.
+  If this request is made using an invalid id, or a non-existent id in the database, the message **no book exists** will be returned.
 
-* *GET /api/issues/{projectname}* returns an array of all the issues from a specific project. Each issue is displayed as it would be displayed in the POST response body.
-This endpoint can also have query params, to filter the 
-issues that are returned from a given project. Fields that 
-can be used: *_id*, *issue_title*, *issue_text*, *created_on*, 
-*updated_on*, *created_by*, *assigned_to*, *open*, *status_text*.
-Users can pass as many fields as request params as they want.
+* *POST /api/books/:bookId* will create a new comment for a given book. A request body like the following is needed: 
+
+   ```
+    {
+      "description": "exampleCommentDescription"
+    }
+   ```
+  After this endpoint is executed, a response body like the following is returned: 
+
+   ```
+    {
+      "_id": "5c6e893463fb6c5bde6c8c2c",
+      "title": "exampleBookTitle",
+      "comments": [
+        {
+          "_id": "5c6fd419f48f041eb4f64bcc",
+          "description": "comment1"
+        },
+        {
+          "_id": "5c6fd424f48f041eb4f64bcd",
+          "description": "exampleCommentDescription"
+        }
+      ]
+    }
+   ```
+  As you can see, the new comment is added to an existing one. It's the same response you get
+  when you are trying to get the specifics of a particular book.
+
+  The *description* field is mandatory.
+
+  If the *description* has an empty string, or is missing entirely,
+   the message **The description property must be provided and it should not be an empty string.** will be the response.
+  If this request is made using an invalid id, or a non-existent id in the database, the message **no book exists** will be returned.
+
+* *DELETE /api/books/* will delete all the books and all their associated comments
+from the database. If the request is successful, the message
+**complete delete successful** will be returned.
+
+* *DELETE /api/books/:bookId* will delete a specific book and all its associated comments from the database. 
+If the request is successful, the message **delete successful** will be returned.
+If this request is made using an invalid id, or a non-existent id in the database, the message **no book exists** will be returned.
 
 ## Getting Started
 
